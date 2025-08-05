@@ -1,0 +1,17 @@
+{
+    "name": "ali/finance-tracker",
+    "autoload": {
+        "psr-4": {
+            "Ali\\FinanceTracker\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ali Fahmi Yusuf",
+            "email": "107609258+alifhmiysf@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "phpoffice/phpspreadsheet": "^4.5"
+    }
+}

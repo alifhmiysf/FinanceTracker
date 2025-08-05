@@ -1,0 +1,9 @@
+body {
+  font-family: sans-serif;
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+}
+form input, form select, form button {
+  margin: 5px;
+}
