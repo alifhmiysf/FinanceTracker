@@ -6,188 +6,301 @@
     <title>Finance Tracker</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+        darkMode: 'class'
+        }
+    </script>
     </head>
-    <body class="bg-gray-100 text-gray-800">
+    <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100">
 
-    <div class="max-w-4xl mx-auto p-6">
-        <h1 class="text-3xl font-bold mb-6 text-center">💰 Finance Tracker</h1>
-        <button id="downloadExcel" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded my-4">
-        Download Excel
+    <!-- Header -->
+    <nav class="sticky top-0 z-50 backdrop-blur-md bg-white/30 dark:bg-gray-900/50 border-b border-white/20 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 flex justify-between items-center h-14">
+        <h1 class="text-xl font-bold text-gray-800 dark:text-white">My Finance App</h1>
+        <button id="darkModeToggle" class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white">
+            🌙
         </button>
+        </div>
+    </nav>
 
-        <!-- Form -->
-        <form id="transactionForm" class="bg-white shadow-md rounded px-6 py-4 mb-6 space-y-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input type="date" name="date" required class="border p-2 rounded w-full" />
-            <select name="type" required class="border p-2 rounded w-full">
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+        <!-- Summary Section -->
+        <section class="bg-white p-4 rounded-lg shadow dark:bg-gray-800">
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">📊 Summary</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="p-4 border rounded-lg dark:border-gray-700">
+            <p class="text-gray-600 dark:text-gray-400">Total Income</p>
+            <p id="totalIncome" class="text-green-600 dark:text-green-400 font-semibold text-lg">Rp0</p>
+            </div>
+            <div class="p-4 border rounded-lg dark:border-gray-700">
+            <p class="text-gray-600 dark:text-gray-400">Total Expense</p>
+            <p id="totalExpense" class="text-red-600 dark:text-red-400 font-semibold text-lg">Rp0</p>
+            </div>
+            <div class="p-4 border rounded-lg dark:border-gray-700">
+            <p class="text-gray-600 dark:text-gray-400">Balance</p>
+            <p id="balance" class="text-blue-600 dark:text-blue-400 font-semibold text-lg">Rp0</p>
+            </div>
+        </div>
+        </section>
+
+
+        <!-- Filter Bar -->
+        <section class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mt-4">
+        <div class="flex flex-wrap gap-2">
+            <input 
+            type="date" 
+            id="startDate" 
+            class="border px-3 py-2 rounded w-full sm:w-auto 
+                    dark:bg-gray-700 dark:border-gray-600 
+                    dark:text-gray-200 dark:placeholder-gray-400">
+
+            <input 
+            type="date" 
+            id="endDate" 
+            class="border px-3 py-2 rounded w-full sm:w-auto 
+                    dark:bg-gray-700 dark:border-gray-600 
+                    dark:text-gray-200 dark:placeholder-gray-400">
+
+            <select 
+            id="filterCategory" 
+            class="border px-3 py-2 rounded w-full sm:w-auto 
+                    dark:bg-gray-700 dark:border-gray-600 
+                    dark:text-gray-200">
+            <option value="">All Categories</option>
+            <option value="Food">Food</option>
+            <option value="Salary">Salary</option>
+            <option value="Transport">Transport</option>
+            </select>
+
+            <select 
+            id="filterType" 
+            class="border px-3 py-2 rounded w-full sm:w-auto 
+                    dark:bg-gray-700 dark:border-gray-600 
+                    dark:text-gray-200">
+            <option value="">All Types</option>
             <option value="income">Income</option>
             <option value="expense">Expense</option>
             </select>
-            <select name="category" required class="border p-2 rounded w-full">
-            <option value="">-- Select Category --</option>
-            <option value="Food">Food</option>
-            <option value="Transport">Transport</option>
-            <option value="Salary">Salary</option>
-            <option value="Entertainment">Entertainment</option>
-            <option value="Others">Others</option>
-            </select>
-            <input type="text" name="description" placeholder="Description" required class="border p-2 rounded w-full" />
-            <input type="number" name="amount" placeholder="Amount" required class="border p-2 rounded w-full" />
+
+            <input 
+            type="text" 
+            id="searchText" 
+            placeholder="Search description..."
+            class="border px-3 py-2 rounded w-full sm:w-auto 
+                    dark:bg-gray-700 dark:border-gray-600 
+                    dark:text-gray-200 dark:placeholder-gray-400">
+
+            <button 
+            id="resetFilters" 
+            class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+            Reset
+            </button>
         </div>
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add</button>
+        </section>
+
+
+        <!-- Download -->
+        <button id="downloadExcel" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
+        Download Excel
+        </button>
+
+
+        <!-- upload form -->
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".xlsx,.xls" required>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Upload</button>
         </form>
 
-        <!-- Transaction List -->
-        <h2 class="text-xl font-semibold mb-2">🧾 Transaction List</h2>
-        <div id="transactionList" class="space-y-2 mb-6"></div>
+
+
+
+        <!-- Transaction Table -->
+        <div class="overflow-x-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+        <table id="transactionTable" class="min-w-full border-collapse text-left">
+            <thead class="bg-gray-200 dark:bg-gray-700">
+            <tr>
+                <th class="p-3 cursor-pointer font-semibold text-gray-800 dark:text-gray-200" data-column="date">Tanggal ⬍</th>
+                <th class="p-3 cursor-pointer font-semibold text-gray-800 dark:text-gray-200" data-column="category">Kategori ⬍</th>
+                <th class="p-3 cursor-pointer font-semibold text-gray-800 dark:text-gray-200" data-column="type">Type ⬍</th>
+                <th class="p-3 cursor-pointer font-semibold text-gray-800 dark:text-gray-200" data-column="amount">Jumlah ⬍</th>
+                <th class="p-3 cursor-pointer font-semibold text-gray-800 dark:text-gray-200" data-column="amount">Aksi ⬍</th>
+            </tr>
+            </thead>
+            <tbody id="tableBody" class="divide-y divide-gray-200 dark:divide-gray-600 text-gray-800 dark:text-gray-200">
+            <!-- Render via JS -->
+            </tbody>
+        </table>
+        </div>
+
+
+            <!-- Transaction Form -->
+        <section class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4">
+        <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">➕ Add Transaction</h2>
+        <form id="transactionForm" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <input 
+                type="date" 
+                name="date" 
+                required 
+                class="border p-2 rounded w-full text-gray-800 dark:text-gray-200 dark:bg-gray-700 dark:border-gray-600" 
+            />
+            <select 
+                name="type" 
+                required 
+                class="border p-2 rounded w-full text-gray-800 dark:text-gray-200 dark:bg-gray-700 dark:border-gray-600"
+            >
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+            </select>
+            <select 
+                name="category" 
+                required 
+                class="border p-2 rounded w-full text-gray-800 dark:text-gray-200 dark:bg-gray-700 dark:border-gray-600"
+            >
+                <option value="">-- Select Category --</option>
+                <option value="Food">Food</option>
+                <option value="Transport">Transport</option>
+                <option value="Salary">Salary</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Others">Others</option>
+            </select>
+            <input 
+                type="text" 
+                name="description" 
+                placeholder="Description" 
+                required 
+                class="border p-2 rounded w-full text-gray-800 dark:text-gray-200 dark:bg-gray-700 dark:border-gray-600" 
+            />
+            <input 
+                type="number" 
+                name="amount" 
+                placeholder="Amount" 
+                required 
+                min="1"
+                class="border p-2 rounded w-full text-gray-800 dark:text-gray-200 dark:bg-gray-700 dark:border-gray-600" 
+            />
+            </div>
+            <div class="text-right">
+            <button 
+                type="submit" 
+                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+                Add
+            </button>
+            </div>
+        </form>
+        </section>
+
+        <!-- Transaction List Collapsible -->
+        <section class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+        <div class="flex justify-between items-center cursor-pointer" id="transactionHeader">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">🧾 Transaction List</h2>
+            <button id="toggleTransactionList" class="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+            ▼
+            </button>
+        </div>
+        <div id="transactionList" class="space-y-2 mt-4 hidden text-gray-800 dark:text-gray-200"></div>
+        </section>
+
+
+       <!-- Chart Filter -->
+        <div class="flex gap-4 mb-2 items-center">
+        <label for="chartFilter" class="font-semibold text-gray-700 ">
+            Filter Chart:
+        </label>
+        <select id="chartFilter" 
+            class="border rounded px-2 py-1 dark:bg-gray-700 dark:border-gray-600 text-gray-700 dark:text-gray-200">
+            <option value="day">Per Hari</option>
+            <option value="month" selected>Per Bulan</option>
+            <option value="year">Per Tahun</option>
+        </select>
+        </div>
 
         <!-- Charts -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-            <h2 class="text-lg font-semibold mb-2 text-center">📊 Expense Chart</h2>
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+            <h2 class="text-lg font-semibold mb-4 text-center text-gray-700 dark:text-gray-200">
+            📊 Expense Chart
+            </h2>
             <canvas id="expenseChart" height="200"></canvas>
         </div>
-        <div>
-            <h2 class="text-lg font-semibold mb-2 text-center">📈 Income Chart</h2>
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+            <h2 class="text-lg font-semibold mb-4 text-center text-gray-700 dark:text-gray-200">
+            📈 Income Chart
+            </h2>
             <canvas id="incomeChart" height="200"></canvas>
         </div>
-        </div>
-    </div>
+        </section>
 
+            <!-- Additional Monthly Charts -->
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <h2 class="text-lg font-semibold mb-4 text-center text-gray-700 dark:text-gray-200">
+                📈 Trend Keuangan Per Bulan
+                </h2>
+                <canvas id="lineChart" height="200"></canvas>
+            </div>
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                <h2 class="text-lg font-semibold mb-4 text-center text-gray-700 dark:text-gray-200">
+                📊 Perbandingan Income & Expense Per Bulan
+                </h2>
+                <canvas id="barChart" height="200"></canvas>
+            </div>
+            </section>
+    </main>
+
+    <!-- Dark Mode Script -->
     <script>
-        document.getElementById('downloadExcel').addEventListener('click', () => {
-        window.location.href = 'backend.php?action=download_excel';
+        const toggle = document.getElementById('darkModeToggle');
+        const body = document.body;
+
+        if (localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark');
+        }
+
+        toggle.addEventListener('click', () => {
+        body.classList.toggle('dark');
+        if (body.classList.contains('dark')) {
+            localStorage.setItem('theme', 'dark');
+        } else {
+            localStorage.setItem('theme', 'light');
+        }
         });
 
-        document.addEventListener('DOMContentLoaded', () => {
-        const form = document.getElementById('transactionForm');
-        const list = document.getElementById('transactionList');
-        let editId = null;
+        function renderList(data) {
+        const transactionList = document.getElementById('transactionList');
+        transactionList.innerHTML = '';
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(form);
-            const data = Object.fromEntries(formData.entries());
-            data.amount = parseFloat(data.amount);
-
-            let url = 'backend.php?action=add';
-            if (editId !== null) {
-            url = 'backend.php?action=update';
-            data.id = editId;
-            }
-
-            const res = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+        if (data.length === 0) {
+            // tetap bisa kasih info kalau kosong
+            transactionList.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-center">No transactions found.</p>';
+        } else {
+            data.forEach(trx => {
+                const div = document.createElement('div');
+                div.className = 'p-2 border rounded flex justify-between items-center dark:border-gray-700';
+                div.innerHTML = `
+                    <div>
+                        <p class="font-semibold text-gray-800 dark:text-gray-200">${trx.description}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">${trx.date} | ${trx.category} | ${trx.type}</p>
+                    </div>
+                    <div>
+                        <span class="${trx.type==='income'
+                            ?'text-green-600 dark:text-green-400'
+                            :'text-red-600 dark:text-red-400'} font-semibold">
+                            Rp${trx.amount.toLocaleString()}
+                        </span>
+                    </div>
+                `;
+                transactionList.appendChild(div);
             });
-
-            form.reset();
-            editId = null;
-            loadData();
-        });
-
-        window.deleteTransaction = async function (id) {
-            if (!confirm('Yakin mau dihapus?')) return;
-            await fetch('backend.php?action=delete', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id })
-            });
-            loadData();
         }
+    }
 
-        window.editTransaction = function (button) {
-            const item = JSON.parse(button.dataset.item);
-            form.date.value = item.date;
-            form.type.value = item.type;
-            form.category.value = item.category;
-            form.description.value = item.description;
-            form.amount.value = item.amount;
-            editId = item.id;
-        }
-
-        let expenseChart = null;
-        let incomeChart = null;
-
-        async function loadData() {
-            const res = await fetch('backend.php?action=list');
-            const data = await res.json();
-            list.innerHTML = '';
-
-            const expenseData = {};
-            const incomeData = {};
-
-            data.forEach(item => {
-            const div = document.createElement('div');
-            div.className = "bg-white p-3 rounded shadow flex justify-between items-center";
-            div.innerHTML = `
-                <div>
-                <p><strong>${item.date}</strong> - ${item.type} - ${item.category} - ${item.description} - <strong>Rp${item.amount.toLocaleString()}</strong></p>
-                </div>
-                <div class="space-x-2">
-                <button data-item='${JSON.stringify(item)}' onclick="editTransaction(this)" class="bg-yellow-400 px-3 py-1 rounded text-white">Edit</button>
-                <button onclick="deleteTransaction(${item.id})" class="bg-red-500 px-3 py-1 rounded text-white">Delete</button>
-                </div>
-            `;
-            list.appendChild(div);
-
-            if (item.type === 'expense') {
-                expenseData[item.category] = (expenseData[item.category] || 0) + item.amount;
-            } else if (item.type === 'income') {
-                incomeData[item.category] = (incomeData[item.category] || 0) + item.amount;
-            }
-            });
-
-            updateChart('expenseChart', expenseData, 'Expenses by Category', expenseChart => expenseChart = expenseChart);
-            updateChart('incomeChart', incomeData, 'Income by Category', incomeChart => incomeChart = incomeChart);
-        }
-
-        function updateChart(canvasId, chartData, chartTitle, chartSetter) {
-            const ctx = document.getElementById(canvasId).getContext('2d');
-            const labels = Object.keys(chartData);
-            const values = Object.values(chartData);
-
-            const chartRef = canvasId === 'expenseChart' ? expenseChart : incomeChart;
-            if (chartRef) chartRef.destroy();
-
-            const newChart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: labels,
-                datasets: [{
-                data: values,
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.6)',
-                    'rgba(54, 162, 235, 0.6)',
-                    'rgba(255, 206, 86, 0.6)',
-                    'rgba(75, 192, 192, 0.6)',
-                    'rgba(153, 102, 255, 0.6)',
-                    'rgba(255, 159, 64, 0.6)'
-                ]
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                legend: { position: 'bottom' },
-                title: {
-                    display: true,
-                    text: chartTitle
-                }
-                }
-            }
-            });
-
-            if (canvasId === 'expenseChart') {
-            expenseChart = newChart;
-            } else {
-            incomeChart = newChart;
-            }
-        }
-
-        loadData();
-        });
     </script>
+
+    <!-- External script -->
+    <script src="script.js"></script>
     </body>
     </html>
